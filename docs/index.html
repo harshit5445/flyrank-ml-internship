@@ -1,61 +1,782 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Refresh / Content Opportunity Scoring — FlyRank Capstone</title>
-<style>
-body{font-family:Arial,sans-serif;max-width:1000px;margin:0 auto;padding:40px 22px;line-height:1.6;color:#202124}
-h1{line-height:1.2} h2{margin-top:42px}
-.card{padding:20px;border:1px solid #ddd;border-radius:12px;margin:18px 0}
-.metrics{display:flex;gap:16px;flex-wrap:wrap}.metric{flex:1;min-width:180px;padding:18px;border:1px solid #ddd;border-radius:10px}
-.metric strong{font-size:28px;display:block}
-img{max-width:100%;border:1px solid #ddd;border-radius:8px;margin:10px 0 24px}
-table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:9px;text-align:left}
-small{color:#666}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Refresh / Content Opportunity Scoring — FlyRank ML Internship</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            color: #222;
+            background: #f7f8fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 50px 25px 80px;
+        }
+
+        header {
+            background: white;
+            border-radius: 14px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: #111827;
+        }
+
+        h3 {
+            color: #1f2937;
+        }
+
+        section {
+            background: white;
+            border-radius: 14px;
+            padding: 35px 40px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.15rem;
+            color: #4b5563;
+            margin-bottom: 25px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .metric {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            display: block;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .callout {
+            border-left: 4px solid #4f46e5;
+            background: #f5f5ff;
+            padding: 18px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning {
+            border-left: 4px solid #d97706;
+            background: #fff8eb;
+            padding: 18px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f4f6;
+            font-weight: 700;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #111827;
+            color: #f9fafb;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .chart {
+            width: 100%;
+            max-width: 850px;
+            display: block;
+            margin: 25px auto;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            color: #6b7280;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px 50px;
+            }
+
+            header,
+            section {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<h1>Capstone Report — Refresh / Content Opportunity Scoring</h1>
-<p><strong>Lane:</strong> Lane 2 — Refresh / Content Opportunity Scoring</p>
-<p><strong>Author:</strong> Harshit</p>
 
-<h2>0. Abstract</h2>
-<p>This capstone asks whether February 2026 search and analytics signals can support a ranked queue of pages for refresh review. The analysis uses measured February GSC and GA4 signals as features and a March 2026 observed GSC outcome as the evaluation proxy. A transparent position/CTR-and-volume baseline is compared with a Random Forest using a client-grouped 80/20 holdout split. On the held-out test set, the baseline achieved Precision@50 of 0.380 while the Random Forest achieved 0.980 Precision@50 and 0.846 ROC-AUC, against a 64.51% majority-class base rate. The output is a decision-support ranking for human review and does not establish that refreshing a page will cause traffic recovery.</p>
+<div class="container">
 
-<h2>1. Problem framing</h2>
-<p>The system ranks content/page records for human refresh review. The unit is one content item for one client. February 2026 is the feature window and March 2026 is the outcome window. The output is a ranked score/queue; a reviewer inspects high-ranked records and decides whether further investigation is warranted.</p>
+    <!-- HEADER -->
+    <header>
+        <h1>Refresh / Content Opportunity Scoring</h1>
 
-<h2>2. Data safety</h2>
-<p>The model uses seven February features: impressions, clicks, CTR, impression-weighted average position, GA4 sessions, GSC availability, and GA4 availability. Client and content identifiers are not model features; the client identifier is used only for grouped validation. March measurements, the target, <code>trend_direction</code>, <code>trend_pct</code>, and other future/label-derived fields are excluded. No client names, domains, private queries, credentials, or raw client-identifying exports are included.</p>
+        <p class="subtitle">
+            A machine-learning ranking approach for identifying content pages
+            that deserve review based on search and analytics signals.
+        </p>
 
-<h2>3. Baseline</h2>
-<p>The transparent baseline combines CTR opportunity relative to the February position-bucket mean with February impressions. Its training-only benchmark is used on the same client-grouped test set as the Random Forest.</p>
-<div class="metrics"><div class="metric"><small>Baseline Precision@50</small><strong>0.380</strong></div><div class="metric"><small>Random Forest Precision@50</small><strong>0.980</strong></div><div class="metric"><small>Random Forest ROC-AUC</small><strong>0.846</strong></div><div class="metric"><small>Test base rate</small><strong>64.51%</strong></div></div>
+        <div class="meta">
+            <span class="tag">Lane 2</span>
+            <span class="tag">Machine Learning</span>
+            <span class="tag">Content Opportunity Scoring</span>
+            <span class="tag">FlyRank ML Internship</span>
+        </div>
 
-<h2>4. Model / analysis</h2>
-<p>A Random Forest classifier was used to produce a ranking score. Configuration: 300 trees, maximum depth 8, minimum leaf size 20, balanced class weights, random seed 42. The target proxy is <code>went_dark=1</code> when a record has zero measured GSC clicks in March 2026 among records with at least one measured March GSC day.</p>
+        <p style="margin-top:25px;">
+            <strong>Author:</strong> Harshit
+        </p>
 
-<h2>5. Evaluation</h2>
-<p>The evaluation uses an 80/20 GroupShuffleSplit grouped by client. There were 105,652 training rows and 55,887 test rows, with 33 training clients, 9 test clients, and zero client overlap. The test positive/majority-class base rate was 64.51%.</p>
-<table><tr><th>Method</th><th>Precision@50</th><th>ROC-AUC</th></tr><tr><td>Transparent baseline</td><td>0.380</td><td>—</td></tr><tr><td>Random Forest</td><td>0.980</td><td>0.846</td></tr></table>
-<p>Among the model's top 50 held-out predictions, 49 were true positives and 1 was a false positive. The false positive illustrates why the score should prioritize review rather than automate an editorial decision.</p>
+        <p>
+            <strong>Repository:</strong>
+            <a href="https://github.com/harshit5445/flyrank-ml-internship"
+               target="_blank">
+                GitHub repository
+            </a>
+        </p>
+    </header>
 
-<h2>6. Interpretation</h2>
-<p>The strongest model reliance was on February impressions, clicks, and CTR. Feature importance describes model reliance, not causality.</p>
-<img src="capstone_feature_importance.png" alt="Random Forest feature importance">
 
-<h2>7. Recommendation</h2>
-<p>Use the ranking to review high-scoring pages first, inspect their February search/analytics context, validate the page manually, record the human decision, and monitor any future intervention. The output is decision support, not a causal prescription.</p>
+    <!-- 0. ABSTRACT -->
+    <section>
+        <h2>0. Abstract</h2>
 
-<h2>Results visualized</h2>
-<img src="capstone_precision_at_50.png" alt="Precision@50 comparison">
+        <p>
+            This project asks whether February 2026 search and analytics
+            signals can support a ranked queue of content pages for refresh
+            review. The analysis uses a time-separated feature window from
+            February 2026 and evaluates a March 2026 outcome proxy based on
+            measured Google Search Console clicks. A client-grouped Random
+            Forest is compared with a transparent baseline using
+            Precision@50 on the same held-out records. On the held-out set,
+            the Random Forest achieved Precision@50 of 0.980 compared with
+            0.380 for the baseline, with a ROC-AUC of 0.846. The resulting
+            ranking is intended as decision support for content and SEO
+            reviewers rather than as a causal prescription that a refresh
+            will recover traffic.
+        </p>
+    </section>
 
-<h2>8. Reproducibility</h2>
-<p>The reproducibility artifact is <code>work/notebooks/capstone.ipynb</code>. The notebook uses random seed 42, builds the time-separated feature/label frame, performs the client-grouped split, trains the model, evaluates the baseline and model on the same held-out records, and writes the metrics and figures.</p>
-<p>Repository: <a href="https://github.com/harshit5445/flyrank-ml-internship">GitHub repository</a></p>
 
-<h2>9. Acknowledgments &amp; data credit</h2>
-<p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>.</p>
+    <!-- 1. PROBLEM -->
+    <section>
+        <h2>1. Introduction / Problem Statement</h2>
+
+        <p>
+            Content teams may have many pages that could potentially benefit
+            from review, but manual review of every page is expensive.
+            The goal of this project is to turn available search and
+            analytics signals into a ranked review queue.
+        </p>
+
+        <p>
+            The decision is therefore:
+            <strong>which content records should a reviewer inspect first?</strong>
+        </p>
+
+        <p>
+            The unit of analysis is one content/page record. The model uses
+            information available during February 2026 and evaluates an
+            outcome observed during March 2026.
+        </p>
+
+        <div class="callout">
+            <strong>Important framing:</strong>
+            The model identifies records that resemble pages associated with
+            the evaluated outcome. It does not establish that refreshing a
+            page will cause traffic to recover.
+        </div>
+
+        <h3>Why use ML?</h3>
+
+        <p>
+            A fixed rule can capture one obvious signal, such as low CTR for
+            a given position. ML allows multiple signals to be combined into
+            a single ranking and then evaluated against a transparent
+            baseline on held-out data.
+        </p>
+    </section>
+
+
+    <!-- 2. DATA -->
+    <section>
+        <h2>2. Data</h2>
+
+        <p>
+            The analysis uses the FlyRank internship warehouse through the
+            gated Hugging Face dataset. The feature window is February 2026
+            and the outcome window is March 2026.
+        </p>
+
+        <div class="metric-grid">
+
+            <div class="metric">
+                <span class="metric-value">161,539</span>
+                <span class="metric-label">Modeling records</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">98,368</span>
+                <span class="metric-label">Positive outcome records</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">33</span>
+                <span class="metric-label">Training clients</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">9</span>
+                <span class="metric-label">Test clients</span>
+            </div>
+
+        </div>
+
+        <h3>Features</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td><code>impressions_feb</code></td>
+                    <td>February search visibility volume</td>
+                </tr>
+
+                <tr>
+                    <td><code>clicks_feb</code></td>
+                    <td>February search clicks</td>
+                </tr>
+
+                <tr>
+                    <td><code>ctr_feb</code></td>
+                    <td>February click-through rate</td>
+                </tr>
+
+                <tr>
+                    <td><code>avg_position_feb</code></td>
+                    <td>February impression-weighted average position</td>
+                </tr>
+
+                <tr>
+                    <td><code>ga4_sessions_feb</code></td>
+                    <td>February measured GA4 sessions</td>
+                </tr>
+
+                <tr>
+                    <td><code>gsc_available_feb</code></td>
+                    <td>Whether GSC measurement was available</td>
+                </tr>
+
+                <tr>
+                    <td><code>ga4_available_feb</code></td>
+                    <td>Whether GA4 measurement was available</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Outcome proxy</h3>
+
+        <p>
+            The March outcome proxy is <code>went_dark</code>, constructed
+            from measured March Google Search Console clicks and measured
+            GSC days. Records with measured March GSC data and zero clicks
+            are treated as positive outcome records.
+        </p>
+
+        <h3>Data safety</h3>
+
+        <p>
+            Client and content identifiers are used only for grouping,
+            joining, and evaluation. They are not used as predictive
+            features.
+        </p>
+
+        <p>
+            Future March outcome fields are excluded from the February
+            feature matrix to prevent leakage.
+        </p>
+
+        <div class="warning">
+            No client names, client-identifying domains or URLs, private
+            queries, credentials, or raw private exports are included in the
+            public paper.
+        </div>
+    </section>
+
+
+    <!-- 3. METHODOLOGY -->
+    <section>
+        <h2>3. Methodology</h2>
+
+        <h3>Time-separated setup</h3>
+
+        <p>
+            February 2026 is used as the feature window and March 2026 is
+            used as the outcome window. This prevents the model from using
+            future outcome information when constructing its features.
+        </p>
+
+        <h3>Model</h3>
+
+        <p>
+            The model is a Random Forest classifier with the following
+            configuration:
+        </p>
+
+        <ul>
+            <li><strong>n_estimators:</strong> 300</li>
+            <li><strong>max_depth:</strong> 8</li>
+            <li><strong>min_samples_leaf:</strong> 20</li>
+            <li><strong>class_weight:</strong> balanced</li>
+            <li><strong>random_state:</strong> 42</li>
+        </ul>
+
+        <h3>Client-grouped split</h3>
+
+        <p>
+            Records are split by client so that the same client does not
+            appear in both training and test sets.
+        </p>
+
+        <div class="metric-grid">
+
+            <div class="metric">
+                <span class="metric-value">105,652</span>
+                <span class="metric-label">Training records</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">55,887</span>
+                <span class="metric-label">Test records</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">0</span>
+                <span class="metric-label">Client overlap</span>
+            </div>
+
+        </div>
+
+        <h3>Evaluation metric</h3>
+
+        <p>
+            The primary ranking metric is <strong>Precision@50</strong>.
+            This measures how many of the first 50 ranked records are
+            positive outcome records.
+        </p>
+    </section>
+
+
+    <!-- 4. RESULTS -->
+    <section>
+        <h2>4. Results</h2>
+
+        <p>
+            Both the baseline and Random Forest are evaluated on the same
+            held-out test records.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Precision@50</th>
+                    <th>ROC-AUC</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Baseline</td>
+                    <td>0.380</td>
+                    <td>—</td>
+                </tr>
+
+                <tr>
+                    <td>Random Forest</td>
+                    <td><strong>0.980</strong></td>
+                    <td><strong>0.846</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="metric-grid">
+
+            <div class="metric">
+                <span class="metric-value">0.980</span>
+                <span class="metric-label">Random Forest Precision@50</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">0.380</span>
+                <span class="metric-label">Baseline Precision@50</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">0.846</span>
+                <span class="metric-label">Random Forest ROC-AUC</span>
+            </div>
+
+            <div class="metric">
+                <span class="metric-value">49 / 50</span>
+                <span class="metric-label">Top-50 true positives</span>
+            </div>
+
+        </div>
+
+        <p>
+            In the top 50 model-ranked test records, 49 were true positives
+            and 1 was a false positive.
+        </p>
+
+        <h3>Model versus baseline</h3>
+
+        <img
+            src="capstone_precision_at_50.png"
+            alt="Model versus baseline Precision at 50"
+            class="chart"
+        >
+
+        <h3>Feature importance</h3>
+
+        <p>
+            The Random Forest feature importances indicate which input
+            variables the fitted model relied on most strongly. Importance
+            reflects model reliance and should not be interpreted as
+            causality.
+        </p>
+
+        <img
+            src="capstone_feature_importance.png"
+            alt="Random Forest feature importance"
+            class="chart"
+        >
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Importance</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td><code>impressions_feb</code></td>
+                    <td>0.418197</td>
+                </tr>
+
+                <tr>
+                    <td><code>clicks_feb</code></td>
+                    <td>0.289182</td>
+                </tr>
+
+                <tr>
+                    <td><code>ctr_feb</code></td>
+                    <td>0.217297</td>
+                </tr>
+
+                <tr>
+                    <td><code>ga4_sessions_feb</code></td>
+                    <td>0.033862</td>
+                </tr>
+
+                <tr>
+                    <td><code>avg_position_feb</code></td>
+                    <td>0.022915</td>
+                </tr>
+
+                <tr>
+                    <td><code>gsc_available_feb</code></td>
+                    <td>0.013943</td>
+                </tr>
+
+                <tr>
+                    <td><code>ga4_available_feb</code></td>
+                    <td>0.004605</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+
+    <!-- 5. LIMITATIONS -->
+    <section>
+        <h2>5. Limitations &amp; Honest Framing</h2>
+
+        <ul>
+            <li>
+                The March outcome is a proxy and does not directly measure
+                whether a content refresh would succeed.
+            </li>
+
+            <li>
+                The model identifies patterns associated with the evaluated
+                outcome; it does not establish causal relationships.
+            </li>
+
+            <li>
+                Search and analytics availability varies across records, so
+                missingness and measurement availability are part of the
+                data context.
+            </li>
+
+            <li>
+                Feature importance describes model behavior rather than
+                proving that a feature causes the outcome.
+            </li>
+
+            <li>
+                A high Precision@50 on this held-out sample does not
+                guarantee the same performance on every future dataset.
+            </li>
+
+            <li>
+                The ranked output is intended to prioritize human review,
+                not automatically trigger content changes.
+            </li>
+        </ul>
+    </section>
+
+
+    <!-- 6. INTERPRETATION -->
+    <section>
+        <h2>6. Interpretation</h2>
+
+        <p>
+            The Random Forest substantially concentrated positive outcome
+            records near the top of the held-out ranking compared with the
+            transparent baseline.
+        </p>
+
+        <p>
+            The strongest model reliance was on February impressions,
+            clicks, and CTR. This indicates that the model primarily used
+            search visibility and engagement signals when constructing its
+            ranking.
+        </p>
+
+        <p>
+            The model's false positive in the top 50 is also important:
+            ranking systems are not perfect classifiers, so the output
+            should be reviewed by a human rather than treated as an
+            automatic decision.
+        </p>
+    </section>
+
+
+    <!-- 7. RECOMMENDATION -->
+    <section>
+        <h2>7. Recommendation</h2>
+
+        <p>
+            Use the ranking to review high-scoring pages first, inspect their
+            February search and analytics context, validate the page
+            manually, record the human decision, and monitor any future
+            intervention.
+        </p>
+
+        <div class="callout">
+            <strong>Recommended workflow:</strong>
+            Model ranking → human page review → content decision →
+            future monitoring.
+        </div>
+
+        <p>
+            The output is decision support, not a causal prescription.
+        </p>
+    </section>
+
+
+    <!-- 8. REPRODUCIBILITY -->
+    <section>
+        <h2>8. Reproducibility</h2>
+
+        <p>
+            The reproducibility artifact is
+            <code>work/notebooks/capstone.ipynb</code>.
+        </p>
+
+        <p>
+            The notebook uses random seed 42, builds the time-separated
+            feature/label frame, performs the client-grouped split, trains
+            the model, evaluates the baseline and model on the same
+            held-out records, and produces the reported metrics and
+            figures.
+        </p>
+
+        <p>
+            Repository:
+            <a
+                href="https://github.com/harshit5445/flyrank-ml-internship"
+                target="_blank"
+            >
+                GitHub repository
+            </a>
+        </p>
+
+        <p>
+            The repository contains the assignment notebooks, capstone
+            notebook, model outputs, and paper source.
+        </p>
+    </section>
+
+
+    <!-- 9. ACKNOWLEDGMENTS -->
+    <section>
+        <h2>9. Acknowledgments &amp; Data Credit</h2>
+
+        <p>
+            Built on the
+            <a
+                href="https://flyrank.ai"
+                target="_blank"
+            >
+                FlyRank ML Internship dataset
+            </a>.
+        </p>
+
+        <p>
+            This project was completed as part of the FlyRank ML Internship
+            capstone.
+        </p>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+        <p>
+            FlyRank ML Internship · Refresh / Content Opportunity Scoring
+        </p>
+
+        <p>
+            <a
+                href="https://github.com/harshit5445/flyrank-ml-internship"
+                target="_blank"
+            >
+                View the project repository
+            </a>
+        </p>
+    </footer>
+
+</div>
+
 </body>
 </html>
