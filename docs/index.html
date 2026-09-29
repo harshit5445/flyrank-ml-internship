@@ -43,13 +43,13 @@ small{color:#666}
 
 <h2>6. Interpretation</h2>
 <p>The strongest model reliance was on February impressions, clicks, and CTR. Feature importance describes model reliance, not causality.</p>
-<img src="assets/capstone_feature_importance.png" alt="Random Forest feature importance">
+<img src="capstone_feature_importance.png" alt="Random Forest feature importance">
 
 <h2>7. Recommendation</h2>
 <p>Use the ranking to review high-scoring pages first, inspect their February search/analytics context, validate the page manually, record the human decision, and monitor any future intervention. The output is decision support, not a causal prescription.</p>
 
 <h2>Results visualized</h2>
-<img src="assets/capstone_precision_at_50.png" alt="Model versus baseline Precision at 50">
+<img src="capstone_precision_at_50.png" alt="Precision@50 comparison">
 
 <h2>8. Reproducibility</h2>
 <p>The reproducibility artifact is <code>work/notebooks/capstone.ipynb</code>. The notebook uses random seed 42, builds the time-separated feature/label frame, performs the client-grouped split, trains the model, evaluates the baseline and model on the same held-out records, and writes the metrics and figures.</p>
