@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Refresh / Content Opportunity Scoring — FlyRank Capstone</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1000px;margin:0 auto;padding:40px 22px;line-height:1.6;color:#202124}
+h1{line-height:1.2} h2{margin-top:42px}
+.card{padding:20px;border:1px solid #ddd;border-radius:12px;margin:18px 0}
+.metrics{display:flex;gap:16px;flex-wrap:wrap}.metric{flex:1;min-width:180px;padding:18px;border:1px solid #ddd;border-radius:10px}
+.metric strong{font-size:28px;display:block}
+img{max-width:100%;border:1px solid #ddd;border-radius:8px;margin:10px 0 24px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:9px;text-align:left}
+small{color:#666}
+</style>
+</head>
+<body>
+<h1>Capstone Report — Refresh / Content Opportunity Scoring</h1>
+<p><strong>Lane:</strong> Lane 2 — Refresh / Content Opportunity Scoring</p>
+<p><strong>Author:</strong> Harshit</p>
+
+<h2>0. Abstract</h2>
+<p>This capstone asks whether February 2026 search and analytics signals can support a ranked queue of pages for refresh review. The analysis uses measured February GSC and GA4 signals as features and a March 2026 observed GSC outcome as the evaluation proxy. A transparent position/CTR-and-volume baseline is compared with a Random Forest using a client-grouped 80/20 holdout split. On the held-out test set, the baseline achieved Precision@50 of 0.380 while the Random Forest achieved 0.980 Precision@50 and 0.846 ROC-AUC, against a 64.51% majority-class base rate. The output is a decision-support ranking for human review and does not establish that refreshing a page will cause traffic recovery.</p>
+
+<h2>1. Problem framing</h2>
+<p>The system ranks content/page records for human refresh review. The unit is one content item for one client. February 2026 is the feature window and March 2026 is the outcome window. The output is a ranked score/queue; a reviewer inspects high-ranked records and decides whether further investigation is warranted.</p>
+
+<h2>2. Data safety</h2>
+<p>The model uses seven February features: impressions, clicks, CTR, impression-weighted average position, GA4 sessions, GSC availability, and GA4 availability. Client and content identifiers are not model features; the client identifier is used only for grouped validation. March measurements, the target, <code>trend_direction</code>, <code>trend_pct</code>, and other future/label-derived fields are excluded. No client names, domains, private queries, credentials, or raw client-identifying exports are included.</p>
+
+<h2>3. Baseline</h2>
+<p>The transparent baseline combines CTR opportunity relative to the February position-bucket mean with February impressions. Its training-only benchmark is used on the same client-grouped test set as the Random Forest.</p>
+<div class="metrics"><div class="metric"><small>Baseline Precision@50</small><strong>0.380</strong></div><div class="metric"><small>Random Forest Precision@50</small><strong>0.980</strong></div><div class="metric"><small>Random Forest ROC-AUC</small><strong>0.846</strong></div><div class="metric"><small>Test base rate</small><strong>64.51%</strong></div></div>
+
+<h2>4. Model / analysis</h2>
+<p>A Random Forest classifier was used to produce a ranking score. Configuration: 300 trees, maximum depth 8, minimum leaf size 20, balanced class weights, random seed 42. The target proxy is <code>went_dark=1</code> when a record has zero measured GSC clicks in March 2026 among records with at least one measured March GSC day.</p>
+
+<h2>5. Evaluation</h2>
+<p>The evaluation uses an 80/20 GroupShuffleSplit grouped by client. There were 105,652 training rows and 55,887 test rows, with 33 training clients, 9 test clients, and zero client overlap. The test positive/majority-class base rate was 64.51%.</p>
+<table><tr><th>Method</th><th>Precision@50</th><th>ROC-AUC</th></tr><tr><td>Transparent baseline</td><td>0.380</td><td>—</td></tr><tr><td>Random Forest</td><td>0.980</td><td>0.846</td></tr></table>
+<p>Among the model's top 50 held-out predictions, 49 were true positives and 1 was a false positive. The false positive illustrates why the score should prioritize review rather than automate an editorial decision.</p>
+
+<h2>6. Interpretation</h2>
+<p>The strongest model reliance was on February impressions, clicks, and CTR. Feature importance describes model reliance, not causality.</p>
+<img src="assets/capstone_feature_importance.png" alt="Random Forest feature importance">
+
+<h2>7. Recommendation</h2>
+<p>Use the ranking to review high-scoring pages first, inspect their February search/analytics context, validate the page manually, record the human decision, and monitor any future intervention. The output is decision support, not a causal prescription.</p>
+
+<h2>Results visualized</h2>
+<img src="assets/capstone_precision_at_50.png" alt="Model versus baseline Precision at 50">
+
+<h2>8. Reproducibility</h2>
+<p>The reproducibility artifact is <code>work/notebooks/capstone.ipynb</code>. The notebook uses random seed 42, builds the time-separated feature/label frame, performs the client-grouped split, trains the model, evaluates the baseline and model on the same held-out records, and writes the metrics and figures.</p>
+<p>Repository: <a href="https://github.com/harshit5445/flyrank-ml-internship">GitHub repository</a></p>
+
+<h2>9. Acknowledgments &amp; data credit</h2>
+<p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>.</p>
+</body>
+</html>
